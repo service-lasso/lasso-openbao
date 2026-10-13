@@ -1,33 +1,26 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-
-$required = @(
-  (Join-Path $root 'service.json'),
-  (Join-Path $root 'verify\service-harness.json'),
-  (Join-Path $root 'runtime\win32\echo-service.ps1')
-)
-
-foreach ($path in $required) {
-  if (-not (Test-Path $path)) {
-    throw "Missing required file: $path"
-  }
-}
+$serviceId = '@openbao'
 
 $service = Get-Content (Join-Path $root 'service.json') -Raw | ConvertFrom-Json
-if ($service.id -ne 'echo-service') {
-  throw 'service.json id mismatch'
+if ($service.id -ne $serviceId) {
+  throw "service.json id mismatch: expected $serviceId, got $($service.id)"
 }
 
 $contract = Get-Content (Join-Path $root 'verify\service-harness.json') -Raw | ConvertFrom-Json
-if ($contract.serviceId -ne 'echo-service') {
-  throw 'service-harness.json serviceId mismatch'
+if ($contract.serviceId -ne $serviceId) {
+  throw "service-harness.json serviceId mismatch: expected $serviceId, got $($contract.serviceId)"
 }
 
-$env:ECHO_MESSAGE = 'pipeline test message'
-$output = & (Join-Path $root 'runtime\win32\echo-service.ps1') | Out-String
-if ($output -notmatch 'pipeline test message') {
-  throw 'Echo runtime output mismatch'
+$binary = Join-Path $root 'dist\openbao-win32\runtime\bao.exe'
+if (-not (Test-Path $binary)) {
+  throw "OpenBao runtime not found at $binary; run scripts/package.ps1 first"
 }
 
-Write-Host 'Template tests passed (Windows)'
+$version = (& $binary version 2>&1 | Out-String).Trim()
+if ($version -notmatch 'OpenBao v') {
+  throw "OpenBao runtime version check failed: $version"
+}
+
+Write-Host "Service tests passed (Windows: $serviceId, $version)"

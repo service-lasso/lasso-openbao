@@ -1,0 +1,85 @@
+{
+  "id": "@openbao",
+  "name": "OpenBao",
+  "description": "Release-backed OpenBao secrets manager service for Service Lasso.",
+  "version": "2.7.1",
+  "enabled": true,
+  "depend_on": [],
+  "ports": {
+    "service": 18200,
+    "cluster": 18201
+  },
+  "env": {
+    "BAO_ADDR": "http://127.0.0.1:${SERVICE_PORT}",
+    "BAO_API_PORT": "${SERVICE_PORT}",
+    "BAO_CLUSTER_PORT": "${CLUSTER_PORT}",
+    "BAO_LOG_LEVEL": "info"
+  },
+  "globalenv": {
+    "BAO_ADDR": "http://127.0.0.1:${SERVICE_PORT}",
+    "BAO_UI_URL": "http://127.0.0.1:${SERVICE_PORT}/ui"
+  },
+  "urls": [
+    {
+      "label": "ui",
+      "url": "http://127.0.0.1:${SERVICE_PORT}/ui",
+      "kind": "local"
+    },
+    {
+      "label": "health",
+      "url": "http://127.0.0.1:${SERVICE_PORT}/v1/sys/health",
+      "kind": "local"
+    }
+  ],
+  "artifact": {
+    "kind": "archive",
+    "source": {
+      "type": "github-release",
+      "repo": "service-lasso/lasso-openbao",
+      "channel": "latest"
+    },
+    "platforms": {
+      "win32": {
+        "assetName": "openbao-win32.zip",
+        "archiveType": "zip",
+        "command": ".\\bao.exe",
+        "args": ["server", "-config=openbao.hcl"]
+      },
+      "linux": {
+        "assetName": "openbao-linux.tar.gz",
+        "archiveType": "tar.gz",
+        "command": "./bao",
+        "args": ["server", "-config=openbao.hcl"]
+      },
+      "darwin": {
+        "assetName": "openbao-darwin.tar.gz",
+        "archiveType": "tar.gz",
+        "command": "./bao",
+        "args": ["server", "-config=openbao.hcl"]
+      }
+    }
+  },
+  "install": {
+    "files": [
+      {
+        "path": "./runtime/data/.keep",
+        "content": ""
+      },
+      {
+        "path": "./logs/.keep",
+        "content": ""
+      }
+    ]
+  },
+  "config": {
+    "files": [
+      {
+        "path": "./runtime/openbao.hcl",
+        "content": "ui = true\n\nstorage \"pebbledb\" {\n  path = \"./data\"\n}\n\nlistener \"tcp\" {\n  address     = \"127.0.0.1:${SERVICE_PORT}\"\n  tls_disable = true\n}\n\napi_addr = \"http://127.0.0.1:${SERVICE_PORT}\"\n"
+      }
+    ]
+  },
+  "healthcheck": {
+    "type": "tcp"
+  }
+}
