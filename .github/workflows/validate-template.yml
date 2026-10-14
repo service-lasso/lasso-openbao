@@ -102,6 +102,16 @@ jobs:
         shell: bash
         run: bash ./scripts/test.sh
 
+      - name: Run OpenBao runtime e2e (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\scripts\e2e.ps1
+
+      - name: Run OpenBao runtime e2e (POSIX)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash ./scripts/e2e.sh
+
       - name: Verify via released harness (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
