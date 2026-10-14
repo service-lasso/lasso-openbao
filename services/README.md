@@ -5,7 +5,7 @@ Important distinction:
 - the manifests under `services/` are example inventory entries showing what a host/app repo should carry when it wants to manage a small baseline stack through Service Lasso
 
 Current baseline inventory:
-- `echo-service`
+- `@openbao`
 - `@serviceadmin`
 - `@node`
 - `@localcert`
@@ -18,4 +18,4 @@ Optional provider inventory:
 
 If a host/app repo includes `@serviceadmin`, it should also include the manifests needed to satisfy Service Admin's declared service dependencies.
 
-Core Service Lasso services use the `@` prefix: `@node`, `@python`, `@java`, `@localcert`, `@nginx`, `@traefik`, and `@serviceadmin`. `echo-service` stays unprefixed because it is the sample/test managed service.
+Core Service Lasso services use the `@` prefix: `@openbao`, `@node`, `@python`, `@java`, `@localcert`, `@nginx`, `@traefik`, and `@serviceadmin`.

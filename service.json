@@ -1,14 +1,14 @@
 {
-  "id": "echo-service",
-  "name": "Echo Service",
-  "description": "Minimal sample service used to prove the service-template contract.",
+  "id": "@openbao",
+  "name": "OpenBao",
+  "description": "Release-backed OpenBao secrets manager service for Service Lasso.",
   "enabled": true,
-  "version": "0.1.0",
+  "version": "2.7.1",
   "logoutput": true,
   "icon": [
     {
       "provider": "lucide",
-      "name": "terminal"
+      "name": "key-round"
     }
   ],
   "servicetype": 50,
@@ -16,7 +16,7 @@
   "logo": [],
   "logs": {
     "default": {
-      "path": "logs/echo-service.log"
+      "path": "logs/openbao.log"
     }
   },
   "meta": {
@@ -25,110 +25,152 @@
         "name": "Service Lasso contributors"
       }
     ],
-    "license": "Apache-2.0",
+    "license": "MPL-2.0",
     "repository": {
       "type": "git",
-      "url": "https://github.com/service-lasso/service-template.git"
+      "url": "https://github.com/service-lasso/lasso-openbao.git"
     },
-    "websiteUrl": "https://github.com/service-lasso/service-template",
-    "documentationUrl": "https://github.com/service-lasso/service-template/blob/main/README.md",
-    "issuesUrl": "https://github.com/service-lasso/service-template/issues",
+    "websiteUrl": "https://openbao.org",
+    "documentationUrl": "https://openbao.org/docs/",
+    "issuesUrl": "https://github.com/service-lasso/lasso-openbao/issues",
     "support": {
-      "issuesUrl": "https://github.com/service-lasso/service-template/issues"
+      "issuesUrl": "https://github.com/service-lasso/lasso-openbao/issues"
     },
     "links": {
-      "repository": "https://github.com/service-lasso/service-template",
-      "issues": "https://github.com/service-lasso/service-template/issues",
-      "documentation": "https://github.com/service-lasso/service-template/blob/main/README.md"
+      "repository": "https://github.com/service-lasso/lasso-openbao",
+      "issues": "https://github.com/service-lasso/lasso-openbao/issues",
+      "documentation": "https://openbao.org/docs/"
     },
     "tags": [
       "service-lasso",
-      "template",
-      "example-service"
+      "secrets",
+      "openbao",
+      "vault"
     ]
   },
   "artifact": {
     "kind": "archive",
     "source": {
       "type": "github-release",
-      "repo": "service-lasso/service-template",
+      "repo": "service-lasso/lasso-openbao",
       "channel": "latest"
     },
     "platforms": {
       "win32": {
-        "assetName": "echo-service-win32.zip",
+        "assetName": "openbao-win32.zip",
         "archiveType": "zip",
-        "command": "./echo-service.exe",
-        "args": []
+        "command": ".\\bao.exe",
+        "args": ["server", "-config=openbao.hcl"]
       },
       "darwin": {
-        "assetName": "echo-service-darwin.tar.gz",
+        "assetName": "openbao-darwin.tar.gz",
         "archiveType": "tar.gz",
-        "command": "./echo-service",
-        "args": []
+        "command": "./bao",
+        "args": ["server", "-config=openbao.hcl"]
       },
       "linux": {
-        "assetName": "echo-service-linux.tar.gz",
+        "assetName": "openbao-linux.tar.gz",
         "archiveType": "tar.gz",
-        "command": "./echo-service",
-        "args": []
+        "command": "./bao",
+        "args": ["server", "-config=openbao.hcl"]
       },
       "default": {
-        "assetName": "echo-service-win32.zip",
+        "assetName": "openbao-win32.zip",
         "archiveType": "zip",
-        "command": "./echo-service.exe",
-        "args": []
+        "command": ".\\bao.exe",
+        "args": ["server", "-config=openbao.hcl"]
       }
     }
   },
   "actions": {
     "install": {
-      "description": "Acquire or unpack the packaged echo-service runtime artifact.",
+      "description": "Acquire or unpack the packaged OpenBao secrets manager artifact.",
       "mode": "converge-install",
       "idempotent": true
     },
     "config": {
-      "description": "Materialize deployment-local echo-service config and env values.",
+      "description": "Materialize the OpenBao server configuration and deployment-local env values.",
       "mode": "converge-config",
       "idempotent": true
     },
     "update": {
-      "description": "Apply a newer release artifact and reconcile update-time changes before restart.",
+      "description": "Apply a newer OpenBao release artifact and reconcile update-time changes before restart.",
       "mode": "converge-update",
       "idempotent": true
     },
     "start": {
-      "description": "Start the sample echo service.",
+      "description": "Start the OpenBao server.",
       "mode": "runtime-start",
       "idempotent": true
     },
     "stop": {
-      "description": "Stop the sample echo service gracefully.",
+      "description": "Stop the OpenBao server gracefully.",
       "mode": "runtime-stop",
       "idempotent": true
     },
     "restart": {
-      "description": "Restart the sample echo service after config or update changes.",
+      "description": "Restart the OpenBao server after config or update changes.",
       "mode": "runtime-restart",
       "idempotent": false
     },
     "rollback": {
-      "description": "Restore the previously deployed artifact if an update fails validation.",
+      "description": "Restore the previously deployed OpenBao artifact if an update fails validation.",
       "mode": "state-rollback",
       "idempotent": false
     }
   },
+  "ports": {
+    "service": 18200,
+    "cluster": 18201
+  },
+  "urls": [
+    {
+      "label": "ui",
+      "url": "http://127.0.0.1:${SERVICE_PORT}/ui",
+      "kind": "local"
+    },
+    {
+      "label": "health",
+      "url": "http://127.0.0.1:${SERVICE_PORT}/v1/sys/health",
+      "kind": "local"
+    }
+  ],
+  "install": {
+    "files": [
+      {
+        "path": "./runtime/data/.keep",
+        "content": ""
+      },
+      {
+        "path": "./logs/.keep",
+        "content": ""
+      }
+    ]
+  },
+  "config": {
+    "files": [
+      {
+        "path": "./runtime/openbao.hcl",
+        "content": "ui = true\n\nstorage \"pebbledb\" {\n  path = \"./data\"\n}\n\nlistener \"tcp\" {\n  address     = \"127.0.0.1:${SERVICE_PORT}\"\n  tls_disable = true\n}\n\napi_addr = \"http://127.0.0.1:${SERVICE_PORT}\"\n"
+      }
+    ]
+  },
   "execconfig": {
     "serviceorder": 100,
-    "serviceport": 0,
+    "serviceport": 18200,
     "execcwd": "runtime",
-    "executable": "echo-service",
+    "executable": "bao",
+    "args": ["server", "-config=openbao.hcl"],
     "env": {
-      "ECHO_MESSAGE": "hello from service-template"
+      "BAO_ADDR": "http://127.0.0.1:18200",
+      "BAO_API_PORT": "18200",
+      "BAO_CLUSTER_PORT": "18201",
+      "BAO_LOG_LEVEL": "info",
+      "OPENBAO_HOME": "${SERVICE_ROOT}"
     },
     "depend_on": [],
     "healthcheck": {
-      "type": "process"
+      "type": "tcp"
     }
   }
 }

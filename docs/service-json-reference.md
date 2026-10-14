@@ -47,7 +47,7 @@ At a high level it carries:
 When a repo is acting as an app/reference host around Service Lasso, it should also own a tracked `services/` folder containing the manifests for the services it intends to manage.
 
 Current baseline example inventory in this repo:
-- `services/echo-service/service.json`
+- `services/@openbao/service.json`
 - `services/@serviceadmin/service.json`
 - `services/@node/service.json`
 - `services/@localcert/service.json`
@@ -60,7 +60,7 @@ Important distinction:
 
 If an app repo includes `@serviceadmin`, it should also include the manifests needed to satisfy Service Admin's declared service dependencies rather than relying on hidden sibling-repo state.
 
-Core Service Lasso services use the `@` prefix: `@node`, `@python`, `@java`, `@localcert`, `@nginx`, `@traefik`, `@serviceadmin`, and `@secretsbroker`. `echo-service` stays unprefixed because it is the sample/test managed service.
+Core Service Lasso services use the `@` prefix: `@node`, `@python`, `@java`, `@localcert`, `@nginx`, `@traefik`, `@serviceadmin`, and `@secretsbroker`. `@openbao` is the secrets manager service in this repo.
 
 ## Current sample manifest
 
